@@ -1,4 +1,4 @@
-ifneq (, $(shell command -v opam))
+ifneq (, $(shell which opam))
   ifeq ($(origin PKG_CONFIG_PATH), undefined)
     PKG_CONFIG_PATH := $(shell opam var prefix)/lib/pkgconfig
   endif
@@ -22,7 +22,7 @@ else
 CC ?= cc
 FREESTANDING_CFLAGS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --cflags ocaml-freestanding)
 DISCOVER_CFLAGS := $(shell sed 's/^(\(.*\))$$/\1/' ../ec/cflags_optimized.sexp | tr -d '"')
-CFLAGS := -DNDEBUG -O3 -I../ec/native -I../src/native $(DISCOVER_CFLAGS) $(FREESTANDING_CFLAGS)
+CFLAGS := -DNDEBUG -O3 -I../ec/native -I../src/native $(DISCOVER_CFLAGS) $(FREESTANDING_CFLAGS) -march=skylake
 
 OBJS=p224_stubs.o np224_stubs.o p256_stubs.o np256_stubs.o p384_stubs.o np384_stubs.o p521_stubs.o np521_stubs.o curve25519_stubs.o
 

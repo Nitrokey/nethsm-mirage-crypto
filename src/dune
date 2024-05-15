@@ -8,10 +8,11 @@
   (language c)
   (names detect_cpu_features misc misc_sse md5 sha1 sha256 sha512 hash_stubs
     aes_generic aes_aesni ghash_generic ghash_pclmul ghash_ctmul des_generic
-    chacha poly1305-donna entropy_cpu_stubs)
+    chacha poly1305-donna entropy_cpu_stubs openssl_cpu_globals)
   (flags
-   (:standard)
+   (:standard -O3 -fPIC -DX86_64 -DNDEBUG -fvisibility=hidden -march=skylake)
    (:include cflags_optimized.sexp)))
+ (foreign_archives asm)
  (foreign_stubs
   (language c)
   (names chacha_generic)
@@ -29,3 +30,11 @@
  (targets cflags.sexp cflags_optimized.sexp)
  (action
   (run ../config/cfg.exe)))
+
+(rule
+ (targets libasm.a dllasm.so)
+ (deps (source_tree native/asm))
+ (action (progn
+   (chdir native/asm (run cc -c %{deps}))
+   (system "ar rcs libasm.a native/asm/*.o")
+   (run touch dllasm.so))))

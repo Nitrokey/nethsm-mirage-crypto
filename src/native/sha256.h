@@ -26,15 +26,18 @@
 #define CRYPTOHASH_SHA256_H
 
 #include <stdint.h>
+#include "fast_sha256_defs.h"
 
-struct sha256_ctx
-{
-	uint64_t sz;
-	uint8_t  buf[128];
-	uint32_t h[8];
-};
+typedef struct sha256_ctx {
+  ALIGN(16) sha256_state_t state;
+  uint64_t len;
 
-#define sha224_ctx 		sha256_ctx
+  ALIGN(16) uint8_t data[2 * SHA256_BLOCK_BYTE_LEN];
+
+  sha256_word_t rem;
+} sha256_ctx_t;
+
+#define sha224_ctx             sha256_ctx
 
 #define SHA224_DIGEST_SIZE	28
 #define SHA224_CTX_SIZE		sizeof(struct sha224_ctx)

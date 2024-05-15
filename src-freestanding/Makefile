@@ -1,4 +1,4 @@
-ifneq (, $(shell command -v opam))
+ifneq (, $(shell which opam))
   ifeq ($(origin PKG_CONFIG_PATH), undefined)
     PKG_CONFIG_PATH := $(shell opam var prefix)/lib/pkgconfig
   endif
@@ -22,7 +22,7 @@ else
 CC ?= cc
 FREESTANDING_CFLAGS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --cflags ocaml-freestanding)
 MIRAGE_CRYPTO_OPT_CFLAGS := $(shell sed 's/^(\(.*\))$$/\1/' ../src/cflags_optimized.sexp | tr -d '"')
-CFLAGS := -I../src/native $(MIRAGE_CRYPTO_OPT_CFLAGS) $(FREESTANDING_CFLAGS)
+CFLAGS := -I../src/native $(MIRAGE_CRYPTO_OPT_CFLAGS) $(FREESTANDING_CFLAGS) -O3 -fPIC -DX86_64 -DNDEBUG -fvisibility=hidden -march=skylake
 
 MIRAGE_CRYPTO_CFLAGS := $(shell sed 's/^(\(.*\))$$/\1/' ../src/cflags.sexp | tr -d '"')
 UNOPT_CFLAGS := -I../src/native $(MIRAGE_CRYPTO_CFLAGS) $(FREESTANDING_CFLAGS)
@@ -35,7 +35,7 @@ UNOPT_OBJS=chacha_generic.o
 OBJS=detect_cpu_features.o misc.o misc_sse.o hash_stubs.o md5.o sha1.o \
   sha256.o sha512.o aes_generic.o aes_aesni.o des_generic.o chacha.o \
   poly1305-donna.o ghash_pclmul.o ghash_generic.o ghash_ctmul.o \
-  entropy_cpu_stubs.o
+  entropy_cpu_stubs.o openssl_cpu_globals.o sha256-x86_64.o sha512-x86_64.o
 
 libmirage_crypto_freestanding_stubs.a: $(OBJS) $(UNOPT_OBJS)
 	$(AR) r $@ $^

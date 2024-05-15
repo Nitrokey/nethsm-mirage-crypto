@@ -5,26 +5,35 @@
 #include "sha256.h"
 #include "sha512.h"
 
+
 #define __define_hash(name, upper)                                           \
                                                                              \
   CAMLprim value                                                             \
   mc_ ## name ## _init (value ctx) {                                         \
-    _mc_ ## name ## _init ((struct name ## _ctx *) Bytes_val (ctx));         \
+    struct name ## _ctx ctx_;                                                \
+    memset(&ctx_, 0, sizeof(struct name ## _ctx));              \
+    _mc_ ## name ## _init (&ctx_);         \
+    memcpy(Bytes_val(ctx), &ctx_, sizeof(struct name ## _ctx));              \
     return Val_unit;                                                         \
   }                                                                          \
                                                                              \
   CAMLprim value                                                             \
   mc_ ## name ## _update (value ctx, value src, value len) {                 \
+    struct name ## _ctx ctx_;                                                \
+    memcpy(&ctx_, Bytes_val(ctx), sizeof(struct name ## _ctx));              \
     _mc_ ## name ## _update (                                                \
-      (struct name ## _ctx *) Bytes_val (ctx),                               \
+      &ctx_,                               \
       _ba_uint8 (src), Int_val (len));                                       \
+    memcpy(Bytes_val(ctx), &ctx_, sizeof(struct name ## _ctx));              \
     return Val_unit;                                                         \
   }                                                                          \
                                                                              \
   CAMLprim value                                                             \
   mc_ ## name ## _finalize (value ctx, value dst) {                          \
+    struct name ## _ctx ctx_;                                                \
+    memcpy(&ctx_, Bytes_val(ctx), sizeof(struct name ## _ctx));              \
     _mc_ ## name ## _finalize (                                              \
-      (struct name ## _ctx *) Bytes_val (ctx), _ba_uint8 (dst));             \
+      &ctx_, _ba_uint8 (dst));             \
     return Val_unit;                                                         \
   }                                                                          \
                                                                              \

@@ -25,13 +25,16 @@
 #define CRYPTOHASH_SHA512_H
 
 #include <stdint.h>
+#include "fast_sha512_defs.h"
 
-struct sha512_ctx
-{
-	uint64_t sz[2];
-	uint8_t  buf[128];
-	uint64_t h[8];
-};
+typedef struct sha512_ctx {
+  ALIGN(16) sha512_state_t state;
+  uint64_t len;
+
+  ALIGN(16) uint8_t data[2 * SHA512_BLOCK_BYTE_LEN];
+
+  sha512_word_t rem;
+} sha512_ctx_t;
 
 #define sha384_ctx sha512_ctx
 
@@ -48,7 +51,5 @@ void _mc_sha384_finalize(struct sha384_ctx *ctx, uint8_t *out);
 void _mc_sha512_init(struct sha512_ctx *ctx);
 void _mc_sha512_update(struct sha512_ctx *ctx, uint8_t *data, uint32_t len);
 void _mc_sha512_finalize(struct sha512_ctx *ctx, uint8_t *out);
-
-/* void _mc_sha512_init_t(struct sha512_ctx *ctx, int t); */
 
 #endif
