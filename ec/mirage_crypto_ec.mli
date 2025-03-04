@@ -145,16 +145,6 @@ module type Dsa = sig
         and message digest to a [k] suitable for seeding the signing process. *)
   end
 
-  (** {2 Misc} *)
-
-  (** Operations to precompute useful data meant to be hardcoded in
-      [mirage-crypto-ec] before compilation *)
-  module Precompute : sig
-    val generator_tables : unit -> string array array array
-    (** Return an array of shape (Fe_length * 2, 15, 3) containing multiples of
-        the generator point for the curve. Useful only to bootstrap tables
-        necessary for scalar multiplication. *)
-  end
 end
 
 (** Elliptic curve with Diffie-Hellman and DSA. *)
@@ -164,21 +154,7 @@ module type Dh_dsa = sig
   module Dh : Dh
 
   (** Digital signature algorithm. *)
-  module Dsa : sig
-    include Dsa
-
-    (** Low-level arithmetic operations. *)
-    module Primitive : sig
-      val generator : pub
-      (** [generator] is the generator point (base point) of the curve. *)
-
-      val add : pub -> pub -> pub
-      (** [add p q] is the sum of points [p] and [q]. *)
-
-      val scalar_mult : priv -> pub -> pub
-      (** [scalar_mult s p] is the scalar multiplication of [p] by [s]. *)
-    end
-  end
+  module Dsa : Dsa
 end
 
 (** The NIST P-256 curve, also known as SECP256R1. *)
