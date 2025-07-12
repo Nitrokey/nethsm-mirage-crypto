@@ -1,0 +1,5 @@
+(executables
+ (names speed)
+ (modules speed)
+ (libraries nethsm-crypto-nist nethsm-crypto-secp256k1
+  nethsm-crypto-brainpool mirage-crypto-rng.unix))

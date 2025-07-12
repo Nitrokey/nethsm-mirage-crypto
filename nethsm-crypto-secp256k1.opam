@@ -1,0 +1,43 @@
+opam-version: "2.0"
+synopsis: "Elliptic Curve Cryptography generated with ECCKiila/Fiat"
+description: """
+An implementation of key exchange (ECDH) and digital signature (ECDSA and
+Schnorr/BIP-340) algorithms using code from ECCKiila/Fiat
+(<https://gitlab.com/nisec/ecckiila>).
+
+The curve SECP256K1 (Bitcoin curve) is implemented by this package.
+"""
+maintainer: "Sven Anderson <sven@anderson.de>"
+authors: [
+  "See AUTHORS file"
+]
+license: "MIT"
+homepage: "https://github.com/Nitrokey/nethsm-crypto"
+doc: "https://ocaml.org/p/nethsm-crypto/latest/doc/index.html"
+bug-reports: "https://github.com/Nitrokey/nethsm-crypto/issues"
+depends: [
+  "dune" {>= "2.7"}
+  "ocaml" {>= "4.13.0"}
+  "dune-configurator"
+  "eqaf" {>= "0.7"}
+  "mirage-crypto-rng" {=version}
+  "digestif" {>= "1.2.0"}
+  "alcotest" {with-test & >= "0.8.1"}
+  "ppx_deriving_yojson" {with-test}
+  "ppx_deriving" {with-test}
+  "yojson" {with-test & >= "1.6.0"}
+  "asn1-combinators" {with-test & >= "0.3.1"}
+  "ohex" {with-test & >= "0.2.0"}
+  "ounit2" {with-test}
+]
+conflicts: [
+  "ocaml-freestanding"
+]
+build: [
+  ["dune" "subst"] {dev}
+  ["dune" "build" "-p" name "-j" jobs]
+  ["dune" "runtest" "-p" name "-j" jobs] {with-test}
+]
+dev-repo: "git+https://github.com/Nitrokey/nethsm-crypto.git"
+tags: []
+x-maintenance-intent: [ "(latest)" ]
