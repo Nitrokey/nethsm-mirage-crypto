@@ -28,13 +28,10 @@ depends: [
   "yojson" {with-test & >= "1.6.0"}
   "asn1-combinators" {with-test & >= "0.3.1"}
 ]
-conflicts: [
-  "ocaml-freestanding"
-]
 build: [
   ["dune" "subst"] {dev}
   ["dune" "build" "-p" name "-j" jobs]
-  ["dune" "runtest" "-p" name "-j" jobs] {with-test}
+  ["dune" "runtest" "-j" jobs] {with-test}
 ]
 dev-repo: "git+https://github.com/Nitrokey/nethsm-crypto.git"
 tags: []
