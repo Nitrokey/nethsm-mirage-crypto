@@ -19,16 +19,13 @@ depends: [
   "dune" {>= "2.7"}
   "ocaml" {>= "4.13.0"}
   "dune-configurator"
-  "eqaf" {>= "0.7"}
-  "mirage-crypto-rng" {=version}
+  "mirage-crypto-rng" {>= "2"}
   "digestif" {>= "1.2.0"}
   "alcotest" {with-test & >= "0.8.1"}
   "ppx_deriving_yojson" {with-test}
   "ppx_deriving" {with-test}
   "yojson" {with-test & >= "1.6.0"}
   "asn1-combinators" {with-test & >= "0.3.1"}
-  "ohex" {with-test & >= "0.2.0"}
-  "ounit2" {with-test}
 ]
 conflicts: [
   "ocaml-freestanding"

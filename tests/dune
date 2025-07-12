@@ -1,6 +1,5 @@
 (library
  (name test_common)
- (libraries ounit2 ohex)
  (modules test_common)
  (optional))
 
@@ -22,4 +21,4 @@
    ecdh_brainpoolP384r1_test.json ecdsa_brainpoolP384r1_sha384_test.json
    ecdh_brainpoolP512r1_test.json ecdsa_brainpoolP512r1_sha512_test.json)
  (libraries alcotest nethsm-crypto-nist
-  nethsm-crypto-secp256k1 nethsm-crypto-brainpool wycheproof digestif asn1-combinators))
+  nethsm-crypto-secp256k1 nethsm-crypto-brainpool wycheproof asn1-combinators))
