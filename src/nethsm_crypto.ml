@@ -249,6 +249,7 @@ end
 module Make_point_base (P : Parameters) (F : Foreign_point) (Fe: Field_element)
     (T : Transform) : Point = struct
 
+  let pident = rev_string P.pident
   let make (Fe x) (Fe y) = Point (String.cat x y)
   let p_x (Point p) = Fe (String.sub p 0 P.fe_length)
   let p_y (Point p) = Fe (String.sub p P.fe_length P.fe_length)
@@ -368,7 +369,6 @@ module Make_point_base (P : Parameters) (F : Foreign_point) (Fe: Field_element)
      y = min(y',p-y')
      Q=(x,y) is the canonical representation of the point
   *)
-    let pident = P.pident (* (Params.p + 1) / 4*) in
     let b = Fe.from_be_octets P.b in
     let p = Fe.from_be_octets P.p in
     fun pk ->
@@ -398,7 +398,7 @@ module Make_point_base (P : Parameters) (F : Foreign_point) (Fe: Field_element)
       match String.get_uint8 buf 0 with
       | 0x00 when String.length buf = 1 ->
         Ok (at_infinity ())
-      | 0x02 | 0x03 when String.length P.pident > 0 ->
+      | 0x02 | 0x03 when String.length pident > 0 ->
         decompress buf
       | 0x04 when String.length buf = 1 + len + len ->
         let x = String.sub buf 1 len in
@@ -430,6 +430,25 @@ end
 module Make_point
   (P : Parameters) (F : Foreign_point) (Fe : Field_element)
   : Point = Make_point_base(P)(F)(Fe)(NoTransform)
+
+
+module Twist (P : Parameters_twisted) (Fe : Field_element) : Transform = struct
+  let z = Fe.from_be_octets P.z
+  let z2 = Fe.sqr z
+  let z3 = Fe.mul z2 z
+  let z_inv = Fe.inv z
+  let z_inv2 = Fe.sqr z_inv
+  let z_inv3 = Fe.mul z_inv2 z_inv
+
+  let in_x = Fe.mul z2
+  let in_y = Fe.mul z3
+  let out_x = Fe.mul z_inv2
+  let out_y = Fe.mul z_inv3
+end
+
+module Make_point_twisted
+  (P : Parameters_twisted) (F : Foreign_point) (Fe : Field_element)
+  : Point = Make_point_base(P)(F)(Fe)(Twist(P)(Fe))
 
 module type Scalar = sig
   val not_zero : string -> bool
@@ -740,25 +759,5 @@ module Make_dsa (Param : Parameters) (F : Scalar_element) (P : Point) (S : Scala
         | Error _, _ | _, Error _ -> false
     with
     | Message_too_long -> false
-
-end
-
-module type Scalar_element_bip340 = sig
-  include Scalar_element
-  val opp : scalar_element -> scalar_element
-end
-
-module type Foreign_n_bip340 = sig
-  include Foreign_n
-  val opp : out_scalar_element -> scalar_element -> unit
-end
-
-module Make_scalar_element_bip340 (P : Parameters)(F : Foreign_n_bip340) : Scalar_element_bip340 = struct
-  include Make_scalar_element(P)(F)
-
-  let opp a =
-    let tmp = create () in
-    F.opp tmp a;
-    of_se_out tmp
 
 end

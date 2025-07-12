@@ -21,6 +21,26 @@ module type P256k1 = sig
   module Bip340 : Bip340
 end
 
+module type Scalar_element_bip340 = sig
+  include Scalar_element
+  val opp : scalar_element -> scalar_element
+end
+
+module type Foreign_n_bip340 = sig
+  include Foreign_n
+  val opp : out_scalar_element -> scalar_element -> unit
+end
+
+module Make_scalar_element_bip340 (P : Parameters)(F : Foreign_n_bip340) : Scalar_element_bip340 = struct
+  include Make_scalar_element(P)(F)
+
+  let opp a =
+    let tmp = create () in
+    F.opp tmp a;
+    of_se_out tmp
+
+end
+
 module Make_bip340 (Param : Parameters) (F : Scalar_element_bip340) (P : Point) (S : Scalar) : Bip340 = struct
   module H = Digestif.SHA256
 
@@ -31,6 +51,14 @@ module Make_bip340 (Param : Parameters) (F : Scalar_element_bip340) (P : Point) 
 
   let priv_of_octets = S.of_octets
   let priv_to_octets = S.to_octets
+
+  let rev_string buf =
+    let len = String.length buf in
+    let res = Bytes.create len in
+    for i = 0 to len - 1 do
+      Bytes.set res (len - 1 - i) (String.get buf i)
+    done ;
+    Bytes.unsafe_to_string res
 
   let xor_scalar (s1 : string) (s2 : string) : string =
     let l = Param.byte_length in
@@ -198,7 +226,7 @@ module P256k1 : P256k1  = struct
     let g_y = "\x48\x3A\xDA\x77\x26\xA3\xC4\x65\x5D\xA4\xFB\xFC\x0E\x11\x08\xA8\xFD\x17\xB4\x48\xA6\x85\x54\x19\x9C\x47\xD0\x8F\xFB\x10\xD4\xB8"
     let p = "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFE\xFF\xFF\xFC\x2F"
     let n = "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFE\xBA\xAE\xDC\xE6\xAF\x48\xA0\x3B\xBF\xD2\x5E\x8C\xD0\x36\x41\x41"
-    let pident = "\x3F\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xBF\xFF\xFF\x0C" |> rev_string (* (Params.p + 1) / 4*)
+    let pident = "\x3F\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xBF\xFF\xFF\x0C" (* (Params.p + 1) / 4*)
     let byte_length = 32
     let bit_length = 256
     let fe_length = 32
