@@ -19,20 +19,21 @@ let hex_of_string s =
     !st
   and digit c =
     match c with
-    | '0'..'9' -> int_of_char c - 0x30
-    | 'A'..'F' -> int_of_char c - 0x41 + 10
-    | 'a'..'f' -> int_of_char c - 0x61 + 10
+    | '0' .. '9' -> int_of_char c - 0x30
+    | 'A' .. 'F' -> int_of_char c - 0x41 + 10
+    | 'a' .. 'f' -> int_of_char c - 0x61 + 10
     | _ -> invalid_arg "bad character"
   in
   let out = Bytes.create (String.length s / 2) in
   let _idx, leftover =
-    fold (fun (idx, leftover) c ->
+    fold
+      (fun (idx, leftover) c ->
         let c = digit c in
         match leftover with
-        | None -> idx, Some (c lsl 4)
+        | None -> (idx, Some (c lsl 4))
         | Some c' ->
-          Bytes.set_uint8 out idx (c' lor c);
-          succ idx, None)
+            Bytes.set_uint8 out idx (c' lor c);
+            (succ idx, None))
       (0, None) s
   in
   assert (leftover = None);
@@ -124,5 +125,4 @@ let load_file_exn path =
   Yojson.Safe.from_file path |> [%of_yojson: test_file] |> get_json
 
 let ecdh_test_group_exn json = [%of_yojson: ecdh_test_group] json |> get_json
-
 let ecdsa_test_group_exn json = [%of_yojson: ecdsa_test_group] json |> get_json

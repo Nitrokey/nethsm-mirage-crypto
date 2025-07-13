@@ -11,7 +11,6 @@
    (:standard -DNDEBUG)
    (:include cflags_optimized.sexp))))
 
-
 (library
  (name nethsm_crypto_secp256k1)
  (public_name nethsm-crypto-secp256k1)
@@ -32,10 +31,8 @@
  (libraries nethsm-crypto eqaf mirage-crypto-rng digestif)
  (foreign_stubs
   (language c)
-  (names
-    brainpoolp256_stubs nbrainpoolp256_stubs
-    brainpoolp384_stubs nbrainpoolp384_stubs
-    brainpoolp512_stubs nbrainpoolp512_stubs)
+  (names brainpoolp256_stubs nbrainpoolp256_stubs brainpoolp384_stubs
+    nbrainpoolp384_stubs brainpoolp512_stubs nbrainpoolp512_stubs)
   (include_dirs ../src/native)
   (flags
    (:standard -DNDEBUG)
@@ -45,12 +42,12 @@
  (name nethsm_crypto)
  (public_name nethsm-crypto)
  (modules Nethsm_crypto)
- (libraries mirage-crypto-rng)
-)
+ (libraries mirage-crypto-rng))
 
 (env
  (dev
-  (c_flags (:include cflags_warn.sexp))))
+  (c_flags
+   (:include cflags_warn.sexp))))
 
 (include_subdirs unqualified)
 

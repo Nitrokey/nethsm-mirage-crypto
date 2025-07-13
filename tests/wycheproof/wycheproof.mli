@@ -1,5 +1,4 @@
 type json
-
 type hex = string [@@deriving eq]
 
 val pp_hex : Format.formatter -> hex -> unit
@@ -70,7 +69,5 @@ type test_file = {
 [@@deriving show]
 
 val load_file_exn : string -> test_file
-
 val ecdh_test_group_exn : json -> ecdh_test_group
-
 val ecdsa_test_group_exn : json -> ecdsa_test_group

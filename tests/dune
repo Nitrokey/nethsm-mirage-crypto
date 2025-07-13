@@ -6,8 +6,8 @@
 (test
  (name test_ec)
  (modules test_ec)
- (libraries test_common alcotest nethsm-crypto-nist
-  nethsm-crypto-secp256k1 nethsm-crypto-brainpool mirage-crypto-rng.unix))
+ (libraries test_common alcotest nethsm-crypto-nist nethsm-crypto-secp256k1
+   nethsm-crypto-brainpool mirage-crypto-rng.unix))
 
 (test
  (name test_ec_wycheproof)
@@ -20,5 +20,5 @@
    ecdh_brainpoolP256r1_test.json ecdsa_brainpoolP256r1_sha256_test.json
    ecdh_brainpoolP384r1_test.json ecdsa_brainpoolP384r1_sha384_test.json
    ecdh_brainpoolP512r1_test.json ecdsa_brainpoolP512r1_sha512_test.json)
- (libraries alcotest nethsm-crypto-nist
-  nethsm-crypto-secp256k1 nethsm-crypto-brainpool wycheproof asn1-combinators))
+ (libraries alcotest nethsm-crypto-nist nethsm-crypto-secp256k1
+   nethsm-crypto-brainpool wycheproof asn1-combinators))
