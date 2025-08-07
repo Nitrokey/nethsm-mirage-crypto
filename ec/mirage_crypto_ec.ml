@@ -72,14 +72,7 @@ end
 
 module type Dh_dsa = sig
   module Dh : Dh
-  module Dsa : sig
-    include Dsa
-    module Primitive : sig
-      val generator : pub
-      val add : pub -> pub -> pub
-      val scalar_mult : priv -> pub -> pub
-    end
-  end
+  module Dsa : Dsa
 end
 
 module type P256k1 = sig
@@ -419,7 +412,7 @@ module Make_point_base (P : Parameters) (F : Foreign_point) (Fe : Field_element)
       let y_str = T.out_y y |> Fe.from_montgomery |> Fe.to_octets in (* number must not be in montgomery domain*)
       let ident = String.get_uint8 pk 0 in
       let signY =
-        2 + (String.get_uint8 y_str 1) land 1
+        2 + (String.get_uint8 y_str 0) land 1
       in
       let y = if Int.equal signY ident then y else y' in
       validate_finite_point_fe x y
