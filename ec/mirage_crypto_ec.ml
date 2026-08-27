@@ -717,7 +717,7 @@ module Make_dsa (P : Parameters) (Se : Scalar_element) (Pt : Point) (H : Digesti
       let x = Se.mul x Se.one in
       Some (Se.to_be_octets x)
 
-  let sign ?(mask = `Yes) ~key ?k msg =
+  let sign ?(mask = `No) ~key ?k msg =
     (* blinding: literature: s = k^-1 * (m + r * priv_key) mod n
        we blind: s = (k * blind)^-1 * (blind * m + blind * r * priv_key) mod n
     *)
@@ -796,7 +796,6 @@ module Make_dsa (P : Parameters) (Se : Scalar_element) (Pt : Point) (H : Digesti
         | Error _, _ | _, Error _ -> false
     with
     | Message_too_long -> false
-
 end
 
 module type Scalar_element_bip340 = sig
