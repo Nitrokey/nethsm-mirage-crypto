@@ -697,8 +697,14 @@ module Make_dsa (P : Parameters) (Se : Scalar_element) (Pt : Point) (H : Digesti
     (d, q)
 
   let blind mask =
+    let excess_bits = (8 * P.byte_length) - P.bit_length in
+    let b = Bytes.create P.byte_length in
     let rec rng g =
-      let r = Mirage_crypto_rng.generate ?g P.byte_length in
+      Mirage_crypto_rng.generate_into ?g b P.byte_length;
+      (* only keep bit_length bits, else non-byte-aligned orders reject most draws *)
+      if excess_bits <> 0 then
+        Bytes.set_uint8 b 0 (Bytes.get_uint8 b 0 land (0xFF lsr excess_bits));
+      let r = Bytes.unsafe_to_string b in
       if S.is_in_range r then
         Some (Se.mont_from_be_octets r)
       else
